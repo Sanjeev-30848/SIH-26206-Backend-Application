@@ -24,7 +24,7 @@ public class GlobalExceptionHandler
             Exception ex) {
 
         return new ResponseEntity<>(
-                "Something went wrong try again later: " + ex.getMessage(),
+                "Something went wrong: " + ex.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
