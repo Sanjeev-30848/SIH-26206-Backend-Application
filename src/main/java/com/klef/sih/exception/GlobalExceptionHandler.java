@@ -29,6 +29,16 @@ public class GlobalExceptionHandler
         );
     }
 
+    @ExceptionHandler(DisasterNotFoundException.class)
+    public ResponseEntity<String> handleDisasterNotFoundException(
+            DisasterNotFoundException ex) {
+
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<String> handleUnauthorizedException(
             UnauthorizedException ex) {

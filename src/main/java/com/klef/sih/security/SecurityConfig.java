@@ -61,10 +61,34 @@ public class SecurityConfig
                     "/v3/api-docs/**"
                 ).permitAll()
 
-                // Temporary: User APIs
+                // User APIs
                 .requestMatchers(
                     "/api/users/**"
                 ).permitAll()
+
+                // Disaster - ADMIN only for creating
+                .requestMatchers(
+                    org.springframework.http.HttpMethod.POST,
+                    "/api/disasters/**"
+                ).hasRole("ADMIN")
+
+                // Disaster - ADMIN only for updating
+                .requestMatchers(
+                    org.springframework.http.HttpMethod.PUT,
+                    "/api/disasters/**"
+                ).hasRole("ADMIN")
+
+                // Disaster - ADMIN only for deleting
+                .requestMatchers(
+                    org.springframework.http.HttpMethod.DELETE,
+                    "/api/disasters/**"
+                ).hasRole("ADMIN")
+
+                // Disaster GET APIs - authenticated users
+                .requestMatchers(
+                    org.springframework.http.HttpMethod.GET,
+                    "/api/disasters/**"
+                ).authenticated()
 
                 // Everything else requires JWT
                 .anyRequest().authenticated()
