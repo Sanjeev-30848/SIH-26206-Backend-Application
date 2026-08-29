@@ -1,0 +1,6 @@
+package com.klef.sih.security;
+
+public class CustomUserDetails 
+{
+
+}
