@@ -1,5 +1,6 @@
 package com.klef.sih.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.klef.sih.dto.LoginRequest;
@@ -16,13 +17,16 @@ public class AuthServiceImpl implements AuthService
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthServiceImpl(
             UserRepository userRepository,
-            JwtUtil jwtUtil) {
+            JwtUtil jwtUtil, 
+            PasswordEncoder passwordEncoder) {
 
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
     }
     
     @Override
@@ -37,7 +41,9 @@ public class AuthServiceImpl implements AuthService
 
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(
+                passwordEncoder.encode(request.getPassword())
+        );
         user.setRole(Role.USER);
 
         return userRepository.save(user);
@@ -50,11 +56,14 @@ public class AuthServiceImpl implements AuthService
                 .orElseThrow(() -> new RuntimeException(
                         "Invalid email or password"));
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword())) {
+
             throw new RuntimeException(
                     "Invalid email or password");
         }
-
+        
         String token = jwtUtil.generateToken(
                 user.getEmail(),
                 user.getRole().name()
