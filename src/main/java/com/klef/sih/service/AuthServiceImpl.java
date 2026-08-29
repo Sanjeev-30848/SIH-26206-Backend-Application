@@ -3,21 +3,28 @@ package com.klef.sih.service;
 import org.springframework.stereotype.Service;
 
 import com.klef.sih.dto.LoginRequest;
+import com.klef.sih.dto.LoginResponse;
 import com.klef.sih.dto.RegisterRequest;
 import com.klef.sih.entity.Role;
 import com.klef.sih.entity.User;
 import com.klef.sih.repository.UserRepository;
+import com.klef.sih.security.JwtUtil;
 
 @Service
 public class AuthServiceImpl implements AuthService 
 {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public AuthServiceImpl(UserRepository userRepository) {
+    public AuthServiceImpl(
+            UserRepository userRepository,
+            JwtUtil jwtUtil) {
+
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
-
+    
     @Override
     public User register(RegisterRequest request) {
 
@@ -37,7 +44,7 @@ public class AuthServiceImpl implements AuthService
     }
 
     @Override
-    public User login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException(
@@ -48,6 +55,17 @@ public class AuthServiceImpl implements AuthService
                     "Invalid email or password");
         }
 
-        return user;
+        String token = jwtUtil.generateToken(
+                user.getEmail(),
+                user.getRole().name()
+        );
+
+        return new LoginResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().name(),
+                token
+        );
     }
 }

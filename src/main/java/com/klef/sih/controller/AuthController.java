@@ -44,15 +44,7 @@ public class AuthController
     public ResponseEntity<LoginResponse> login(
             @RequestBody LoginRequest request) {
 
-        User user = authService.login(request);
-
-        LoginResponse response = new LoginResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getRole().name(),
-                null
-        );
+        LoginResponse response = authService.login(request);
 
         return ResponseEntity.ok(response);
     }
