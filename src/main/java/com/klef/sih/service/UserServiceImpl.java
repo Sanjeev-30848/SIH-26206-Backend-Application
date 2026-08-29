@@ -3,6 +3,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import com.klef.sih.entity.User;
+import com.klef.sih.exception.UserNotFoundException;
 import com.klef.sih.repository.UserRepository;
 
 @Service
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new UserNotFoundException(
                         "User not found with ID: " + id));
     }
 
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService
         List<User> users = userRepository.findAll();
 
         if (users.isEmpty()) {
-            throw new RuntimeException("No users found in the system.");
+            throw new UserNotFoundException("No users found in the system.");
         }
 
         return users;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService
     public User updateUser(Long id, User user) {
 
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new UserNotFoundException(
                         "Cannot update user. User not found with ID: " + id));
 
         existingUser.setName(user.getName());
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService
     public void deleteUser(Long id) {
 
         if (!userRepository.existsById(id)) {
-            throw new RuntimeException(
+            throw new UserNotFoundException(
                     "Cannot delete user. User not found with ID: " + id);
         }
 
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService
     @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new UserNotFoundException(
                         "User not found with email: " + email));
     }
 }
