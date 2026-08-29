@@ -19,16 +19,16 @@ public class GlobalExceptionHandler
         );
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(
-            Exception ex) {
+    @ExceptionHandler(SOSRequestNotFoundException.class)
+    public ResponseEntity<String> handleSOSRequestNotFoundException(
+            SOSRequestNotFoundException ex) {
 
         return new ResponseEntity<>(
-                "Something went wrong: " + ex.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND
         );
     }
-    
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<String> handleUnauthorizedException(
             UnauthorizedException ex) {
@@ -36,6 +36,16 @@ public class GlobalExceptionHandler
         return new ResponseEntity<>(
                 ex.getMessage(),
                 HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGeneralException(
+            Exception ex) {
+
+        return new ResponseEntity<>(
+                "An unexpected error occurred.",
+                HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
 }

@@ -1,6 +1,14 @@
+
 package com.klef.sih.entity;
 
-public class SOSStatus 
+public enum SOSStatus
 {
 
+    PENDING,
+    ACCEPTED,
+    IN_PROGRESS,
+    RESOLVED,
+    CANCELLED
+
 }
+
