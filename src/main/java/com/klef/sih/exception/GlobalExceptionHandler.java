@@ -88,4 +88,14 @@ public class GlobalExceptionHandler
                 HttpStatus.NOT_FOUND
         );
     }
+    
+    @ExceptionHandler(EmergencyNotFoundException.class)
+    public ResponseEntity<String> handleEmergencyNotFound(
+            EmergencyNotFoundException ex) {
+
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND
+        );
+    }
 }

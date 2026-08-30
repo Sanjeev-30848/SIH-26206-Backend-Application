@@ -1,3 +1,4 @@
+```java
 package com.klef.sih.security;
 
 import org.springframework.context.annotation.Bean;
@@ -13,8 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-public class SecurityConfig 
-{
+public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -196,6 +196,34 @@ public class SecurityConfig
                 ).authenticated()
 
                 // =========================
+                // EMERGENCY APIs
+                // =========================
+
+                // Citizens can raise an emergency
+                .requestMatchers(
+                    HttpMethod.POST,
+                    "/api/emergencies/**"
+                ).authenticated()
+
+                // Authenticated users can view emergencies
+                .requestMatchers(
+                    HttpMethod.GET,
+                    "/api/emergencies/**"
+                ).authenticated()
+
+                // Only ADMIN can update emergencies
+                .requestMatchers(
+                    HttpMethod.PUT,
+                    "/api/emergencies/**"
+                ).hasRole("ADMIN")
+
+                // Only ADMIN can delete emergencies
+                .requestMatchers(
+                    HttpMethod.DELETE,
+                    "/api/emergencies/**"
+                ).hasRole("ADMIN")
+
+                // =========================
                 // EVERYTHING ELSE
                 // =========================
 
@@ -214,3 +242,4 @@ public class SecurityConfig
         return http.build();
     }
 }
+```
