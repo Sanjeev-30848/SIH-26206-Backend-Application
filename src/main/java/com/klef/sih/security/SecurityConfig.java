@@ -1,4 +1,3 @@
-```java
 package com.klef.sih.security;
 
 import org.springframework.context.annotation.Bean;
@@ -216,6 +215,12 @@ public class SecurityConfig {
                     HttpMethod.PUT,
                     "/api/emergencies/**"
                 ).hasRole("ADMIN")
+                
+                // Admin Dashboard
+                .requestMatchers(
+                	    HttpMethod.GET,
+                	    "/api/admin/dashboard"
+                	).hasRole("ADMIN")
 
                 // Only ADMIN can delete emergencies
                 .requestMatchers(
@@ -242,4 +247,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
-```
+
