@@ -58,4 +58,24 @@ public class GlobalExceptionHandler
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
+    
+    @ExceptionHandler(AlertNotFoundException.class)
+    public ResponseEntity<String> handleAlertNotFoundException(
+            AlertNotFoundException ex) {
+
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND
+        );
+    }
+    
+    @ExceptionHandler(EmergencyContactNotFoundException.class)
+    public ResponseEntity<String> handleEmergencyContactNotFound(
+            EmergencyContactNotFoundException ex) {
+
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND
+        );
+    }
 }

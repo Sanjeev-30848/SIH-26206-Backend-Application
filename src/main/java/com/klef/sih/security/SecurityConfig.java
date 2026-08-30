@@ -2,6 +2,7 @@ package com.klef.sih.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,8 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-public class SecurityConfig 
-{
+public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -28,8 +28,7 @@ public class SecurityConfig
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration)
-            throws Exception {
+            AuthenticationConfiguration configuration) throws Exception {
 
         return configuration.getAuthenticationManager();
     }
@@ -49,48 +48,132 @@ public class SecurityConfig
 
             .authorizeHttpRequests(auth -> auth
 
-                // Authentication APIs
+                // =========================
+                // AUTHENTICATION
+                // =========================
+
                 .requestMatchers(
                     "/api/auth/**"
                 ).permitAll()
 
-                // Swagger
+                // =========================
+                // SWAGGER
+                // =========================
+
                 .requestMatchers(
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/v3/api-docs/**"
                 ).permitAll()
 
-                // User APIs
+                // =========================
+                // USER APIs
+                // =========================
+
                 .requestMatchers(
                     "/api/users/**"
                 ).permitAll()
 
-                // Disaster - ADMIN only for creating
+                // =========================
+                // DISASTER APIs
+                // =========================
+
                 .requestMatchers(
-                    org.springframework.http.HttpMethod.POST,
+                    HttpMethod.POST,
                     "/api/disasters/**"
                 ).hasRole("ADMIN")
 
-                // Disaster - ADMIN only for updating
                 .requestMatchers(
-                    org.springframework.http.HttpMethod.PUT,
+                    HttpMethod.PUT,
                     "/api/disasters/**"
                 ).hasRole("ADMIN")
 
-                // Disaster - ADMIN only for deleting
                 .requestMatchers(
-                    org.springframework.http.HttpMethod.DELETE,
+                    HttpMethod.DELETE,
                     "/api/disasters/**"
                 ).hasRole("ADMIN")
 
-                // Disaster GET APIs - authenticated users
                 .requestMatchers(
-                    org.springframework.http.HttpMethod.GET,
+                    HttpMethod.GET,
                     "/api/disasters/**"
                 ).authenticated()
 
-                // Everything else requires JWT
+                // =========================
+                // ALERT APIs
+                // =========================
+
+                .requestMatchers(
+                    HttpMethod.POST,
+                    "/api/alerts/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.PUT,
+                    "/api/alerts/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.DELETE,
+                    "/api/alerts/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.GET,
+                    "/api/alerts/**"
+                ).authenticated()
+
+                // =========================
+                // SHELTER APIs
+                // =========================
+
+                .requestMatchers(
+                    HttpMethod.POST,
+                    "/api/shelters/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.PUT,
+                    "/api/shelters/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.DELETE,
+                    "/api/shelters/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.GET,
+                    "/api/shelters/**"
+                ).authenticated()
+
+                // =========================
+                // EMERGENCY CONTACT APIs
+                // =========================
+
+                .requestMatchers(
+                    HttpMethod.POST,
+                    "/api/emergency-contacts/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.PUT,
+                    "/api/emergency-contacts/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.DELETE,
+                    "/api/emergency-contacts/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.GET,
+                    "/api/emergency-contacts/**"
+                ).authenticated()
+
+                // =========================
+                // EVERYTHING ELSE
+                // =========================
+
                 .anyRequest().authenticated()
             )
 
