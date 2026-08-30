@@ -13,7 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-public class SecurityConfig {
+public class SecurityConfig 
+{
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -171,11 +172,39 @@ public class SecurityConfig {
                 ).authenticated()
 
                 // =========================
+                // PREPAREDNESS APIs
+                // =========================
+
+                .requestMatchers(
+                    HttpMethod.POST,
+                    "/api/preparedness/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.PUT,
+                    "/api/preparedness/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.DELETE,
+                    "/api/preparedness/**"
+                ).hasRole("ADMIN")
+
+                .requestMatchers(
+                    HttpMethod.GET,
+                    "/api/preparedness/**"
+                ).authenticated()
+
+                // =========================
                 // EVERYTHING ELSE
                 // =========================
 
                 .anyRequest().authenticated()
             )
+
+            // =========================
+            // JWT FILTER
+            // =========================
 
             .addFilterBefore(
                 jwtAuthenticationFilter,

@@ -78,4 +78,14 @@ public class GlobalExceptionHandler
                 HttpStatus.NOT_FOUND
         );
     }
+    
+    @ExceptionHandler(PreparednessNotFoundException.class)
+    public ResponseEntity<String> handlePreparednessNotFound(
+            PreparednessNotFoundException ex) {
+
+        return new ResponseEntity<>(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND
+        );
+    }
 }
