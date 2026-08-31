@@ -14,7 +14,7 @@ import com.klef.sih.service.SOSService;
 
 @RestController
 @RequestMapping("/api/sos")
-@CrossOrigin
+@CrossOrigin("*	")
 public class SOSController
 {
 

@@ -1,5 +1,7 @@
 package com.klef.sih.security;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -34,11 +39,53 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",
+                "http://localhost:2026"
+        ));
+
+        configuration.setAllowedMethods(Arrays.asList(
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "OPTIONS"
+        ));
+
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type",
+                "Accept"
+        ));
+
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization"
+        ));
+
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http) throws Exception {
 
         http
             .csrf(csrf -> csrf.disable())
+
+            .cors(cors -> cors.configurationSource(
+                    corsConfigurationSource()
+            ))
 
             .sessionManagement(session ->
                 session.sessionCreationPolicy(
@@ -48,17 +95,14 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // =========================
-                // AUTHENTICATION
-                // =========================
+                .requestMatchers(
+                    HttpMethod.OPTIONS,
+                    "/**"
+                ).permitAll()
 
                 .requestMatchers(
                     "/api/auth/**"
                 ).permitAll()
-
-                // =========================
-                // SWAGGER
-                // =========================
 
                 .requestMatchers(
                     "/swagger-ui/**",
@@ -66,18 +110,12 @@ public class SecurityConfig {
                     "/v3/api-docs/**"
                 ).permitAll()
 
-                // =========================
-                // USER APIs
-                // =========================
-
+              
                 .requestMatchers(
                     "/api/users/**"
                 ).permitAll()
 
-                // =========================
-                // DISASTER APIs
-                // =========================
-
+             
                 .requestMatchers(
                     HttpMethod.POST,
                     "/api/disasters/**"
@@ -97,10 +135,6 @@ public class SecurityConfig {
                     HttpMethod.GET,
                     "/api/disasters/**"
                 ).authenticated()
-
-                // =========================
-                // ALERT APIs
-                // =========================
 
                 .requestMatchers(
                     HttpMethod.POST,
@@ -122,10 +156,6 @@ public class SecurityConfig {
                     "/api/alerts/**"
                 ).authenticated()
 
-                // =========================
-                // SHELTER APIs
-                // =========================
-
                 .requestMatchers(
                     HttpMethod.POST,
                     "/api/shelters/**"
@@ -145,10 +175,6 @@ public class SecurityConfig {
                     HttpMethod.GET,
                     "/api/shelters/**"
                 ).authenticated()
-
-                // =========================
-                // EMERGENCY CONTACT APIs
-                // =========================
 
                 .requestMatchers(
                     HttpMethod.POST,
@@ -170,10 +196,6 @@ public class SecurityConfig {
                     "/api/emergency-contacts/**"
                 ).authenticated()
 
-                // =========================
-                // PREPAREDNESS APIs
-                // =========================
-
                 .requestMatchers(
                     HttpMethod.POST,
                     "/api/preparedness/**"
@@ -194,50 +216,33 @@ public class SecurityConfig {
                     "/api/preparedness/**"
                 ).authenticated()
 
-                // =========================
-                // EMERGENCY APIs
-                // =========================
-
-                // Citizens can raise an emergency
                 .requestMatchers(
                     HttpMethod.POST,
                     "/api/emergencies/**"
                 ).authenticated()
 
-                // Authenticated users can view emergencies
                 .requestMatchers(
                     HttpMethod.GET,
                     "/api/emergencies/**"
                 ).authenticated()
 
-                // Only ADMIN can update emergencies
                 .requestMatchers(
                     HttpMethod.PUT,
                     "/api/emergencies/**"
                 ).hasRole("ADMIN")
-                
-                // Admin Dashboard
-                .requestMatchers(
-                	    HttpMethod.GET,
-                	    "/api/admin/dashboard"
-                	).hasRole("ADMIN")
 
-                // Only ADMIN can delete emergencies
+                .requestMatchers(
+                    HttpMethod.GET,
+                    "/api/admin/dashboard"
+                ).hasRole("ADMIN")
+
                 .requestMatchers(
                     HttpMethod.DELETE,
                     "/api/emergencies/**"
                 ).hasRole("ADMIN")
-
-                // =========================
-                // EVERYTHING ELSE
-                // =========================
 
                 .anyRequest().authenticated()
             )
-
-            // =========================
-            // JWT FILTER
-            // =========================
 
             .addFilterBefore(
                 jwtAuthenticationFilter,
@@ -247,4 +252,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
